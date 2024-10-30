@@ -1,5 +1,8 @@
 # Simple Backtesting in Python
 
+![License](https://img.shields.io/pypi/l/simple-backtester)
+![Python versions](https://img.shields.io/pypi/pyversions/simple-backtester)
+
 A simple backtesting library in Python with no frills and all the customization. Just easy backtesting.
 
 > Note that this project is in <ins>**active development**</ins>. For feature suggestions, feel free to head on over to the [Issues](https://github.com/SSBakh07/simple-backtester/issues) tab.
