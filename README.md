@@ -12,6 +12,21 @@ Compatible with Python 3.9+.
 - Pandas
 - tqdm
 
+## Install
+
+You can install from [PyPI](https://pypi.org/project/simple-backtester/):
+
+```
+pip install simple-backtester
+```
+
+Or you can install directly from the repo:
+
+```
+git clone https://github.com/SSBakh07/simple-backtester
+cd simple-backtester
+pip install .
+```
 
 ## Usage guide
 
