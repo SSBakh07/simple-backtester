@@ -113,9 +113,22 @@ class Order:
 
 class MarketOrder(Order):
     def __init__(self, **kwargs):
+        order_type = kwargs["order_type"]
         assert (
-            kwargs.order_type == ORDER_TYPE.BUY or kwargs.order_type == ORDER_TYPE.SELL
-        ), "Unacceptable order type. Acceptable types for market orders are BUY and SELL."
+            order_type == ORDER_TYPE.BUY or order_type == ORDER_TYPE.SELL
+        ), "Unacceptable order type {}. Acceptable types for market orders are BUY and SELL.".format(
+            order_type
+        )
+
+        try:
+            kwargs["buy_price"] = kwargs.pop("buy_stop")
+        except KeyError:
+            pass
+
+        try:
+            kwargs["sell_price"] = kwargs.pop("sell_stop")
+        except KeyError:
+            pass
 
         super().__init__(**kwargs)
 
@@ -203,17 +216,26 @@ class MarketOrder(Order):
 
 
 class LimitOrder(Order):
-    def __init__(self, **kwargs):
+    def __init__(
+        self,
+        buy_limit: Optional[float] = None,
+        sell_limit: Optional[float] = None,
+        **kwargs
+    ):
+        order_type = kwargs["order_type"]
         assert (
-            kwargs.order_type == ORDER_TYPE.BUY_LIMIT
-            or kwargs.order_type == ORDER_TYPE.SELL_LIMIT
-        ), "Unacceptable order type. Acceptable types for market orders are BUY and SELL."
+            order_type == ORDER_TYPE.BUY_LIMIT or order_type == ORDER_TYPE.SELL_LIMIT
+        ), "Unacceptable order type {}. Acceptable types for limit orders are BUY and SELL.".format(
+            order_type
+        )
 
-        if not (kwargs.buy_price and kwargs.sell_price):
+        if not (buy_limit or sell_limit):
             raise ValueError("Sell limit and buy limit can't be empty in limit orders")
 
-        super().__init__(**kwargs)
+        kwargs["buy_price"] = buy_limit
+        kwargs["sell_price"] = sell_limit
 
+        super().__init__(**kwargs)
 
     def _check(self, new_value: pd.Series, current_balance: float, on_change_callback):
         raise NotImplementedError("Limit orders not implemented yet")

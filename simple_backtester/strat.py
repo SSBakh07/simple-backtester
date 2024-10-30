@@ -18,6 +18,7 @@ class SBStrat:
     def __init__(
         self, balance: float = 1000.0, price_type: PRICE_TYPE = PRICE_TYPE.CLOSE
     ):
+        print(f"balance: {balance}")
         self.balance = balance
         self.portfolio = balance
         self._current_orders = []
@@ -68,6 +69,9 @@ class SBStrat:
             if not name:
                 raise ValueError("For non-main data sources, name must be specified")
             self.__dict__[name] = data
+
+    def reset(self):
+        self.main_datasrc.reset()
 
     def buy(
         self,
@@ -236,9 +240,9 @@ class SBStrat:
 
     # For users to reimplement
     @abstractmethod
-    def on_next(self, data: pd.Series):
+    def on_next(self, new_row: pd.Series):
         pass
-    
+
     def _step(self) -> pd.Series:
         new_row = self.main_datasrc.get_next()
         return new_row
@@ -252,7 +256,6 @@ class SBStrat:
             raise ValueError("No data source provided!")
 
         self.main_datasrc.set_date(start_date, end_date)
-        self.main_datasrc.reset()
 
         # Go through each row
         # on each row call on_next
@@ -265,7 +268,6 @@ class SBStrat:
             self._eval_orders(new_row)
 
         return self.portfolio
-    
 
     @property
     def open_orders(self) -> List[Order]:
@@ -306,44 +308,22 @@ class SBStrat:
         return self.closed_orders + self._current_orders
 
     @property
-    def risk_reward_ratio(self) -> dict:
-        bracket_orders = [
-            order for order in self.all_orders if order.take_profit and order.stop_loss
-        ]
-
-        short_orders = [
-            order
-            for order in bracket_orders
-            if order.order_type == ORDER_TYPE.SELL
-            or order.order_type == ORDER_TYPE.SELL_LIMIT
-        ]
-        long_orders = [order for order in bracket_orders if order not in short_orders]
-
-        rr_long = [
-            (np.mean(x), np.mean(y))
-            for x, y in [
-                (
-                    order.entry_price - order.stop_loss,
-                    order.take_profit - order.entry_price,
-                )
-                for order in long_orders
-            ]
-        ]
-        rr_short = [
-            (np.mean(x), np.mean(y))
-            for x, y in [
-                (
-                    order.stop_loss - order.entry_price,
-                    order.entry_price - order.take_profit,
-                )
-                for order in long_orders
-            ]
-        ]
-
-        return {
-            "all": np.mean(
-                [rr for rr in [rr_long, rr_short] if isinstance(rr, type(None))], axis=0
-            ),
-            "long": rr_long,
-            "short": rr_short,
-        }
+    def is_finished(self) -> bool:
+        return self.main_datasrc.is_finished
+    
+    
+    @property
+    def open_col(self) -> str:
+        return self.main_datasrc.open_col
+    
+    @property
+    def high_col(self) -> str:
+        return self.main_datasrc.high_col
+    
+    @property
+    def low_col(self) -> str:
+        return self.main_datasrc.low_col
+    
+    @property
+    def close_col(self) -> str:
+        return self.main_datasrc.close_col
