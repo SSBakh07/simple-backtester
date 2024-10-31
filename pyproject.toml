@@ -5,9 +5,6 @@ description = "Simple, no frills backtesting"
 authors = ["Shida SB <ssbakh07@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-authors = [
-  { name = "Shida SB", email="ssbakh07@gmail.com" }
-]
 keywords = [
   "backtesting"
 ]
