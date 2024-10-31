@@ -5,6 +5,18 @@ description = "Simple, no frills backtesting"
 authors = ["Shida SB <ssbakh07@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+authors = [
+  { name = "Shida SB", email="ssbakh07@gmail.com" }
+]
+keywords = [
+  "backtesting"
+]
+
+[project.urls]
+homepage = "https://github.com/SSBakh07/simple-backtester"
+documentation = "https://github.com/SSBakh07/simple-backtester"
+repository = "https://github.com/SSBakh07/simple-backtester.git"
+
 
 [tool.poetry.dependencies]
 setuptools = { version="*", python="<3.10"}
